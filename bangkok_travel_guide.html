@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>曼谷 5 天 4 夜自由行指南 🇹🇭 Bangkok Trip</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Leaflet Map (免費開源地圖,免 API Key 即可用。若你之後申請到 Google Maps JS API Key,可再換成 google.maps) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-polylinedecorator/1.6.0/leaflet.polylinedecorator.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            thai: { gold: '#D97706', goldLight: '#FEF3C7', warm: '#F59E0B', coral: '#F97316', mint: '#10B981', mintLight: '#ECFDF5', dark: '#0F172A', card: '#FFFFFF', surface: '#F8FAFC' }
+          },
+          fontFamily: { sans: ['"Plus Jakarta Sans"', '"Noto Sans TC"', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .tap-highlight-transparent { -webkit-tap-highlight-color: transparent; }
+    #leafletMap { height: 300px; width: 100%; border-radius: 1rem; z-index: 1; }
+    .leaflet-number-icon {
+      background: #F59E0B; color: #fff; border: 2px solid #fff;
+      border-radius: 9999px; font-weight: 800; font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+    .leaflet-number-icon.custom { background: #8B5CF6; }
+    .spot-card { cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+    .spot-card:active { transform: scale(.99); }
+    .spot-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+    #spotModal { transition: opacity .2s ease; }
+    #spotModalSheet { transition: transform .25s ease; max-height: 88vh; }
+    textarea.note-box:focus { outline: 2px solid #F59E0B; border-color: #F59E0B; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-20 selection:bg-amber-200">
+
+<div class="max-w-md mx-auto min-h-screen bg-slate-50 flex flex-col shadow-2xl relative">
+
+  <!-- Top Sticky Header -->
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-5 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+        <i data-lucide="palmtree" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600 block">BANGKOK 2026</span>
+        <h1 class="text-lg font-extrabold text-slate-900 leading-none">泰國曼谷 5D4N 行程</h1>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5 bg-amber-50 text-amber-800 text-xs px-2.5 py-1.5 rounded-full font-semibold border border-amber-200/60">
+      <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+      <span>10/08 - 10/12</span>
+    </div>
+  </header>
+
+  <main class="flex-1 px-4 pt-4 space-y-4">
+
+    <!-- Progress -->
+    <section class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden">
+      <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
+      <div class="relative z-10">
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <p class="text-xs font-medium text-slate-400">總體打卡完成率</p>
+            <h2 class="text-2xl font-black text-amber-400" id="progressText">0%</h2>
+          </div>
+          <div class="text-right">
+            <span class="inline-block px-2.5 py-1 bg-amber-400/20 text-amber-300 rounded-lg text-[11px] font-bold border border-amber-400/30">🇹🇭 泰想玩！</span>
+          </div>
+        </div>
+        <div class="w-full bg-slate-700/60 h-2 rounded-full overflow-hidden">
+          <div id="progressBar" class="bg-gradient-to-r from-amber-400 to-orange-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-700/50 flex justify-between text-xs text-slate-300">
+          <span>🎒 機場：BKK 蘇凡納布</span>
+          <span>📱 叫車推薦：Grab / Bolt</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Day Tabs -->
+    <nav class="flex gap-2 overflow-x-auto no-scrollbar py-1" id="dayTabs">
+      <button onclick="switchDay(1)" id="tab-btn-1" class="day-tab flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 bg-amber-500 text-white shadow-md shadow-amber-500/25">Day 1 (10/8)<span class="block text-[10px] font-normal opacity-90">抵達 · 夜市</span></button>
+      <button onclick="switchDay(2)" id="tab-btn-2" class="day-tab flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 bg-white text-slate-600 border border-slate-200">Day 2 (10/9)<span class="block text-[10px] font-normal opacity-80">經典古蹟廟宇</span></button>
+      <button onclick="switchDay(3)" id="tab-btn-3" class="day-tab flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 bg-white text-slate-600 border border-slate-200">Day 3 (10/10)<span class="block text-[10px] font-normal opacity-80">雙市場 · 洽圖洽</span></button>
+      <button onclick="switchDay(4)" id="tab-btn-4" class="day-tab flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 bg-white text-slate-600 border border-slate-200">Day 4 (10/11)<span class="block text-[10px] font-normal opacity-80">水門寺 · 演唱會</span></button>
+      <button onclick="switchDay(5)" id="tab-btn-5" class="day-tab flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 bg-white text-slate-600 border border-slate-200">Day 5 (10/12)<span class="block text-[10px] font-normal opacity-80">返程台北</span></button>
+    </nav>
+
+    <!-- ============ MAP SECTION ============ -->
+    <section class="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-sm space-y-3" id="mapSection">
+      <div class="flex items-center justify-between">
+        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+          <i data-lucide="map" class="w-4 h-4 text-emerald-600"></i>
+          <span id="mapTitle">Day 1 今日地圖路線</span>
+        </h3>
+        <span id="mapCount" class="text-[11px] font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-lg border border-emerald-200"></span>
+      </div>
+      <div id="leafletMap" class="border border-slate-200"></div>
+      <p id="routeInfo" class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl leading-relaxed"></p>
+      <div class="flex gap-2">
+        <button onclick="openDayInGoogleMaps()" class="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold bg-slate-900 text-white px-3 py-2.5 rounded-xl hover:bg-slate-700">
+          <i data-lucide="navigation" class="w-3.5 h-3.5"></i> Google Maps 開啟今日路線
+        </button>
+        <button onclick="scrollToLibrary()" class="flex items-center justify-center gap-1.5 text-xs font-bold bg-amber-500 text-white px-3 py-2.5 rounded-xl hover:bg-amber-600">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i> 加行程
+        </button>
+      </div>
+      <p class="text-[11px] text-slate-400 leading-relaxed">地圖使用 Esri 圖資（免 API Key，可本地 file:// 直接開啟）。編號 = 時間先後順序，箭頭代表前進方向。點標記可看景點名 + 一鍵 Google 導航。若之後申請到 Google Maps Platform Key，可再換成原生 Google 地圖 + 自動路徑規劃。</p>
+    </section>
+
+    <!-- ==================== DAY 1 ==================== -->
+    <div id="day-content-1" class="day-content space-y-3">
+      <div class="bg-amber-50 border border-amber-200/80 rounded-2xl p-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-sm">D1</span>
+          <div><h3 class="font-bold text-slate-900 text-sm">抵達曼谷與開胃夜市</h3><p class="text-xs text-slate-500">10月8日 (週四)</p></div>
+        </div>
+        <span class="text-xs font-bold px-2 py-1 bg-amber-100 text-amber-800 rounded-lg">美食放鬆</span>
+      </div>
+      <div class="space-y-3 relative before:absolute before:inset-0 before:left-4 before:w-0.5 before:bg-slate-200 before:z-0">
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('bkk', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-amber-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">下午時段</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">抵達 BKK 機場 ➔ 飯店 Check-in 📍</h4>
+              <p class="text-xs text-slate-500">Suvarnabhumi Airport to Hotel · 點擊看詳情</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-amber-500 cursor-pointer shrink-0">
+          </div>
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center gap-1 text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"><i data-lucide="car" class="w-3 h-3 text-slate-500"></i> Grab / 計程車 (約 40-60 分鐘)</span>
+            <span class="inline-flex items-center gap-1 text-[11px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-medium"><i data-lucide="info" class="w-3 h-3"></i> 詳情 + 筆記</span>
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">抵達後依指標前往 Grab 叫車接送區或官方 Taxi 櫃台，前往飯店辦理入住放行李並稍作休整。</p>
+        </div>
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('jodd', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-amber-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">19:00</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">喬德夜市 (Jodd Fairs) 吃晚餐 📍</h4>
+              <p class="text-xs text-slate-500">Jodd Fairs Night Market · 點擊看詳情</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-amber-500 cursor-pointer shrink-0">
+          </div>
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <span class="inline-flex items-center gap-1 text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"><i data-lucide="car" class="w-3 h-3 text-slate-500"></i> 計程車 / Grab (約 15-20 分鐘)</span>
+            <span class="text-[11px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-md font-medium">必吃火山排骨</span>
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">熱門打卡美食集中地！品嚐火山排骨、水果西施冰沙、烤海鮮與泰式煎餅。</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-slate-400 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">22:00</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">返回飯店休息</h4><p class="text-xs text-slate-500">Return to Hotel</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" class="w-5 h-5 rounded accent-amber-500 cursor-pointer shrink-0">
+          </div>
+          <div class="mt-3"><span class="inline-flex items-center gap-1 text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"><i data-lucide="car" class="w-3 h-3 text-slate-500"></i> 計程車 / Grab</span></div>
+        </div>
+      </div>
+      <div id="custom-list-1" class="space-y-3"></div>
+    </div>
+
+    <!-- ==================== DAY 2 ==================== -->
+    <div id="day-content-2" class="day-content space-y-3 hidden">
+      <div class="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">D2</span>
+          <div><h3 class="font-bold text-slate-900 text-sm">經典廟宇文化與泰服體驗</h3><p class="text-xs text-slate-500">10月9日 (週五) · Klook 一日套票</p></div>
+        </div>
+        <span class="text-xs font-bold px-2 py-1 bg-emerald-100 text-emerald-800 rounded-lg">文化古蹟</span>
+      </div>
+      <div class="bg-amber-50 border-l-4 border-amber-400 p-3 rounded-r-xl text-xs text-amber-900 space-y-1">
+        <p class="font-bold flex items-center gap-1"><i data-lucide="info" class="w-3.5 h-3.5"></i> 寺廟服裝穿著須知</p>
+        <p>玉佛寺與臥佛寺規定不可穿無袖上衣、短褲或短裙，褲長裙長需過膝，建議穿輕便好脫的便鞋。點卡片可看完整門票/服裝/防騙須知。</p>
+      </div>
+      <div class="space-y-3 relative before:absolute before:inset-0 before:left-4 before:w-0.5 before:bg-slate-200 before:z-0">
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('siam-paragon', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-emerald-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">08:30 - 09:00</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">暹羅百麗宮集合 📍</h4><p class="text-xs text-slate-500">Siam Paragon · 點擊看詳情</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-emerald-500 cursor-pointer shrink-0">
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">08:30 出門前往，準時於 09:00 在暹羅百麗宮集合點向導遊報到。</p>
+        </div>
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('wat-phra-kaew', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-emerald-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">上午行程</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">玉佛寺 (2hr) + 臥佛寺 (1hr) 📍</h4><p class="text-xs text-slate-500">Wat Phra Kaew & Wat Pho · 點擊看門票/服裝</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-emerald-500 cursor-pointer shrink-0">
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">參觀泰國規格最高的皇家寺院玉佛寺，隨後前往觀看壯麗的臥佛金身，行程包含午餐時間。</p>
+        </div>
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('wat-arun', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-emerald-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">下午時段</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">搭渡輪至鄭王廟 + 泰服拍攝 (3hr) 📍</h4><p class="text-xs text-slate-500">Wat Arun & Thai Costume · 點擊看詳情</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-emerald-500 cursor-pointer shrink-0">
+          </div>
+          <div class="mt-2 flex gap-1.5"><span class="inline-flex items-center gap-1 text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"><i data-lucide="ship" class="w-3 h-3 text-blue-500"></i> 湄南河渡輪接駁</span></div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">渡河抵達「泰國埃菲爾鐵塔」鄭王廟，換上華麗泰服在純白陶瓷浮雕佛塔前拍攝紀念大片。</p>
+        </div>
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('iconsiam', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-emerald-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">17:00 起</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">ICONSIAM 暹羅天地逛街 📍</h4><p class="text-xs text-slate-500">ICONSIAM · 點擊看詳情</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-emerald-500 cursor-pointer shrink-0">
+          </div>
+          <div class="mt-2 flex gap-1.5"><span class="inline-flex items-center gap-1 text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"><i data-lucide="car" class="w-3 h-3 text-slate-500"></i> 回程 Grab 打車</span></div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">必逛 B1 室內水上市場 (SOOKSIAM) 吃地道泰式街頭小吃、伴手禮採買、欣賞湄南河畔夜景。</p>
+        </div>
+      </div>
+      <div id="custom-list-2" class="space-y-3"></div>
+    </div>
+
+    <!-- ==================== DAY 3 ==================== -->
+    <div id="day-content-3" class="day-content space-y-3 hidden">
+      <div class="bg-sky-50 border border-sky-200/80 rounded-2xl p-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center font-bold text-sm">D3</span>
+          <div><h3 class="font-bold text-slate-900 text-sm">經典雙市場與洽圖洽血拚</h3><p class="text-xs text-slate-500">10月10日 (週六) · Klook 套票</p></div>
+        </div>
+        <span class="text-xs font-bold px-2 py-1 bg-sky-100 text-sky-800 rounded-lg">市集採買</span>
+      </div>
+      <div class="space-y-3 relative before:absolute before:inset-0 before:left-4 before:w-0.5 before:bg-slate-200 before:z-0">
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('siam-paragon', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-sky-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md">09:30 - 10:00</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">出發至暹羅百麗宮集合 📍</h4><p class="text-xs text-slate-500">09:30 出發 ➔ 10:00 前抵達集合點</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-sky-500 cursor-pointer shrink-0">
+          </div>
+        </div>
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('maeklong', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-sky-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md">10:00 - 16:00</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">美功鐵道市場 + 丹嫩莎朵水上市場 📍</h4><p class="text-xs text-slate-500">Maeklong Railway & Floating Market · 點擊看火車時刻</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-sky-500 cursor-pointer shrink-0">
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">近距離目睹火車貼著菜攤開過的鐵道奇景，隨後搭長尾手搖船穿梭水上市場享受泰式米粉湯與椰子冰淇淋。</p>
+        </div>
+        <div class="spot-card bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-200 shadow-sm relative z-10 ml-8" onclick="openSpot('chatuchak', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-orange-500 shadow-sm"></span>
+          <span class="text-xs font-bold text-orange-600 bg-orange-100 px-2 py-0.5 rounded-md">傍晚銜接二選一 · 點擊看市集攻略</span>
+          <h4 class="font-bold text-slate-900 text-base mt-1">洽圖洽週末市集 (Chatuchak) 📍</h4>
+          <div class="mt-3 space-y-2 text-xs text-slate-700">
+            <div class="p-2.5 bg-white/80 rounded-xl border border-orange-100 flex items-center justify-between gap-2">
+              <span><strong>方案 A：</strong>直接去市集（Siam 搭 BTS 綠線直達 Mo Chit 站，免轉線超順）</span>
+              <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-4 h-4 rounded accent-orange-500 shrink-0">
+            </div>
+            <div class="p-2.5 bg-white/80 rounded-xl border border-orange-100 flex items-center justify-between gap-2">
+              <span><strong>方案 B：</strong>Grab 回飯店休息 1 小時充電，再叫車前往市集晚餐</span>
+              <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-4 h-4 rounded accent-orange-500 shrink-0">
+            </div>
+          </div>
+        </div>
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('thonglo', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-indigo-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">深夜時段</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">曼谷精采夜生活 🔥 📍</h4><p class="text-xs text-slate-500">Bangkok Nightlife / Rooftop Bar</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-indigo-500 cursor-pointer shrink-0">
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">洽圖洽逛完後可至通羅 (Thong Lo) 風格酒吧、高空觀景酒吧或享受泰式古法精油按摩放鬆雙腿。</p>
+        </div>
+      </div>
+      <div id="custom-list-3" class="space-y-3"></div>
+    </div>
+
+    <!-- ==================== DAY 4 ==================== -->
+    <div id="day-content-4" class="day-content space-y-3 hidden">
+      <div class="bg-rose-50 border border-rose-200/80 rounded-2xl p-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold text-sm">D4</span>
+          <div><h3 class="font-bold text-slate-900 text-sm">水門寺大佛 · 演唱會盛典 🎵</h3><p class="text-xs text-slate-500">10月11日 (週日)</p></div>
+        </div>
+        <span class="text-xs font-bold px-2 py-1 bg-rose-100 text-rose-800 rounded-lg">重頭戲！</span>
+      </div>
+      <div class="space-y-3 relative before:absolute before:inset-0 before:left-4 before:w-0.5 before:bg-slate-200 before:z-0">
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('wat-paknam', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-rose-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">10:00 - 13:00</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">睡飽出門 ➔ 水門寺大佛 (Wat Paknam) 📍</h4><p class="text-xs text-slate-500">10:00 起床 · 11:00 前出發參觀與午餐 · 點擊看詳情</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-rose-500 cursor-pointer shrink-0">
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">前來參拜曼谷最具震撼力的 69 米高巨型金色佛坐像與夢幻玻璃琉璃佛塔，打卡留念並在周邊享用午餐。</p>
+        </div>
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('centralworld', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-rose-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">13:00 - 16:30</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">Central World & Big C 伴手禮採購 📍</h4><p class="text-xs text-slate-500">Central World / Big C Supercenter</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-rose-500 cursor-pointer shrink-0">
+          </div>
+          <div class="mt-2 flex gap-1.5">
+            <span class="inline-flex items-center gap-1 text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"><i data-lucide="car" class="w-3 h-3 text-slate-500"></i> Grab 打車約 30 分鐘</span>
+            <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">時間彈性</span>
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">採買泰國必買零食、皇家蜂蜜、手標泰奶、香氛精油，順便吹冷氣保持體力。</p>
+        </div>
+        <div class="spot-card bg-gradient-to-r from-purple-500 to-rose-500 text-white rounded-2xl p-4 shadow-lg shadow-purple-500/20 relative z-10 ml-8" onclick="openSpot('rajamangala', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-white shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold bg-white/20 text-white px-2 py-0.5 rounded-md">16:30 出發</span>
+              <h4 class="font-bold text-white text-base mt-1">Rajamangala 國家體育場 演唱會 🎵🕶️🔥</h4><p class="text-xs text-purple-100">Rajamangala National Stadium · 點擊看交通避塞攻略</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-white cursor-pointer shrink-0">
+          </div>
+          <p class="text-xs text-white/90 mt-2 bg-black/10 p-2 rounded-xl">⚠️ 體育場周邊遇演唱會極度塞車，務必於 16:30 前出發！可考慮先搭 Airport Rail Link 到 Ramkhamhaeng 再轉車或搭乘摩托計程車。</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-slate-400 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">演唱會後宵夜</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">泰國海鮮吃到飽大餐 🦞</h4><p class="text-xs text-slate-500">Seafood Buffet Celebration</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-amber-500 cursor-pointer shrink-0">
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">熱唱狂歡後犒賞自己！大嗑炭烤大頭蝦、生蠔、咖哩螃蟹與冬陰功湯慶祝。</p>
+        </div>
+      </div>
+      <div id="custom-list-4" class="space-y-3"></div>
+    </div>
+
+    <!-- ==================== DAY 5 ==================== -->
+    <div id="day-content-5" class="day-content space-y-3 hidden">
+      <div class="bg-slate-100 border border-slate-300 rounded-2xl p-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-xl bg-slate-700 text-white flex items-center justify-center font-bold text-sm">D5</span>
+          <div><h3 class="font-bold text-slate-900 text-sm">平安滿載返台 ✈️</h3><p class="text-xs text-slate-500">10月12日 (週一)</p></div>
+        </div>
+        <span class="text-xs font-bold px-2 py-1 bg-slate-200 text-slate-800 rounded-lg">返程日</span>
+      </div>
+      <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-xl text-xs text-red-900">
+        <p class="font-bold flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-red-600"></i> 週一早高峰塞車警告！</p>
+        <p class="mt-0.5">曼谷週一早上通勤時間塞車嚴重，<strong>務必於 09:30 前準時上車出發</strong>，預留充裕時間前往 BKK 機場。</p>
+      </div>
+      <div class="space-y-3 relative before:absolute before:inset-0 before:left-4 before:w-0.5 before:bg-slate-200 before:z-0">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-slate-600 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">09:00</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">起床 · 整理行李 · 退房</h4><p class="text-xs text-slate-500">Pack Luggage & Check-out</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" class="w-5 h-5 rounded accent-slate-600 cursor-pointer shrink-0">
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">前一晚演唱會可能較晚睡，稍微多睡一點後快速收拾好退房。</p>
+        </div>
+        <div class="spot-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8" onclick="openSpot('bkk', event)">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-red-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-md">09:30 準時出發</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">搭 Grab 前往 BKK 機場 📍</h4><p class="text-xs text-slate-500">Head to Suvarnabhumi Airport</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-red-500 cursor-pointer shrink-0">
+          </div>
+          <div class="mt-2"><span class="inline-flex items-center gap-1 text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"><i data-lucide="car" class="w-3 h-3 text-slate-500"></i> Grab / 計程車</span></div>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-blue-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">10:30 - 11:00</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">抵達機場 · Check-in · 掛行李</h4><p class="text-xs text-slate-500">Airport Check-in & Baggage Drop</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-blue-500 cursor-pointer shrink-0">
+          </div>
+          <p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded-xl">BKK 安檢與出境人潮較多，提前 1.5 - 2 小時完成報到與出境手續最保險。</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm relative z-10 ml-8">
+          <span class="absolute -left-[27px] top-4 w-3.5 h-3.5 rounded-full border-2 border-white bg-emerald-500 shadow-sm"></span>
+          <div class="flex items-start justify-between gap-2">
+            <div><span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">12:40</span>
+              <h4 class="font-bold text-slate-900 text-base mt-1">飛機起飛 ✈️ 回台北</h4><p class="text-xs text-slate-500">Flight Departs for Taipei</p></div>
+            <input type="checkbox" onchange="toggleItem(this)" onclick="event.stopPropagation()" class="w-5 h-5 rounded accent-emerald-500 cursor-pointer shrink-0">
+          </div>
+        </div>
+      </div>
+      <div id="custom-list-5" class="space-y-3"></div>
+    </div>
+
+    <!-- ============ SPOT LIBRARY ============ -->
+    <section id="librarySection" class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+        <i data-lucide="library" class="w-4 h-4 text-amber-500"></i> 景點庫 · 點擊卡片看詳情 / 加入行程
+      </h3>
+      <p class="text-[11px] text-slate-500">所有景點的開放時間、門票、須知都整理在詳情頁裡。詳情頁下方可寫筆記（自動存檔）＋選擇天數與時間加入行程，會自動按時間排序並同步到上方地圖。</p>
+      <div id="libraryGrid" class="grid grid-cols-1 gap-2"></div>
+    </section>
+
+    <!-- Helper -->
+    <section class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> 行前實用速查</h3>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="p-2.5 bg-slate-50 rounded-xl"><span class="text-slate-400 block text-[10px]">常用泰文招呼</span><p class="font-bold text-slate-800">你好：Sawatdee</p><p class="font-bold text-slate-800">謝謝：Khop Khun</p></div>
+        <div class="p-2.5 bg-slate-50 rounded-xl"><span class="text-slate-400 block text-[10px]">緊急電話</span><p class="font-bold text-slate-800">觀光警察：1155</p><p class="font-bold text-slate-800">報警救護：191</p></div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="exportData()" class="flex-1 text-xs font-bold bg-slate-100 text-slate-700 px-3 py-2 rounded-xl hover:bg-slate-200 flex items-center justify-center gap-1"><i data-lucide="download" class="w-3.5 h-3.5"></i> 匯出筆記+行程</button>
+        <button onclick="clearAllData()" class="flex-1 text-xs font-bold bg-red-50 text-red-600 px-3 py-2 rounded-xl hover:bg-red-100 flex items-center justify-center gap-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> 清除自訂資料</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="sticky bottom-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-6 py-2.5 flex justify-around text-slate-500 z-30">
+    <button onclick="switchDay(1);window.scrollTo({top:0,behavior:'smooth'})" class="flex flex-col items-center gap-1 text-amber-600"><i data-lucide="map-pin" class="w-4 h-4"></i><span class="text-[10px] font-bold">行程</span></button>
+    <button onclick="scrollToLibrary()" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="library" class="w-4 h-4"></i><span class="text-[10px] font-medium">景點庫</span></button>
+    <button onclick="scrollToMap()" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="map" class="w-4 h-4"></i><span class="text-[10px] font-medium">地圖</span></button>
+    <button onclick="resetChecklist()" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="rotate-ccw" class="w-4 h-4"></i><span class="text-[10px] font-medium">重置打卡</span></button>
+  </nav>
+</div>
+
+<!-- ============ SPOT DETAIL MODAL ============ -->
+<div id="spotModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/50" onclick="closeSpot()"></div>
+  <div class="absolute inset-x-0 bottom-0 flex justify-center pointer-events-none">
+    <div id="spotModalSheet" class="pointer-events-auto w-full max-w-md bg-white rounded-t-3xl shadow-2xl overflow-y-auto no-scrollbar">
+      <div id="spotModalContent" class="p-5 pb-8"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= 景點資料庫（含查證過的須知） ================= */
+const SPOTS = {
+  "bkk": { name: "蘇凡納布機場 BKK", en: "Suvarnabhumi Airport", cat: "交通", lat: 13.69, lng: 100.7501,
+    hours: "24 小時營運", ticket: "無", address: "999 Moo 1, Nong Prue, Samut Prakan",
+    transport: "市區↔機場 Grab 約 40-60 分，週一早高峰務必 09:30 前上車。官方 Taxi 在 1F 排隊拿單；Grab 到指定接送區上車。",
+    tips: ["抵達後先買 SIM / 換匯（市區 SuperRich 匯率更好）", "叫車認車牌後 4 碼，高速公路 toll 約 50-75฿ 乘客付", "回程提前 2 小時到，安檢出境人多"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Suvarnabhumi+Airport+Bangkok" },
+  "jodd": { name: "喬德夜市 Jodd Fairs", en: "Jodd Fairs Ratchada", cat: "夜市美食", lat: 13.7567, lng: 100.5615,
+    hours: "每天 17:00–01:00（2025 已搬遷至 Ratchada 新址，拉瑪九舊址已拆遷）", ticket: "免費入場", address: "129 Ratchadaphisek Rd, Din Daeng, Bangkok",
+    transport: "MRT 藍線 Thailand Cultural Centre 4 號出口步行約 3 分鐘；回程建議叫 Grab，散場難攔車。",
+    tips: ["必吃：火山排骨、水果西施冰沙、手抓海鮮、泰式煎餅", "多收現金＋掃碼，部分攤只收現金", "人潮擁擠顧好手機錢包，穿涼鞋方便"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=JODD+FAIRS+Ratchada+Bangkok" },
+  "siam-paragon": { name: "暹羅百麗宮集合點", en: "Siam Paragon Meeting Point", cat: "集合", lat: 13.7463, lng: 100.5347,
+    hours: "百貨 10:00–22:00；一日團多在 09:00 / 10:00 集合", ticket: "無", address: "991 Rama I Rd, Pathum Wan, Bangkok",
+    transport: "BTS Siam 站直結；D3 去洽圖洽可從 Siam 搭 BTS 綠線直達 Mo Chit，免轉線最順。",
+    tips: ["Klook 集合多在 G 層／門口，提早 15 分到＋截圖憑證", "百貨內有換匯、美食街可當備案午餐"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Siam+Paragon+Bangkok" },
+  "wat-phra-kaew": { name: "玉佛寺＋大皇宮", en: "Wat Phra Kaew / Grand Palace", cat: "寺廟", lat: 13.7515, lng: 100.4927,
+    hours: "08:30–15:30 售票，參觀至 16:30（王室活動會臨時異動，出發前查官網）", ticket: "外國人 500฿（僅收現金／刷卡依現場）", address: "Na Phra Lan Rd, Phra Nakhon, Bangkok",
+    transport: "BTS Saphan Taksin 轉湄南河快船 Tha Chang 碼頭；或 Grab 直達（老城區易塞）。",
+    tips: ["服裝最嚴：禁無袖、背心、露肚、透視、短褲短裙（需過膝）、破洞褲；入口可租借", "門口說『今天關閉／要先去別處』100% 是詐騙，不要理", "08:30 一開門就進，避開正午酷暑＋團客", "玉佛殿內禁拍照，需脫鞋"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Temple+of+the+Emerald+Buddha+Bangkok" },
+  "wat-pho": { name: "臥佛寺", en: "Wat Pho (Reclining Buddha)", cat: "寺廟", lat: 13.7465, lng: 100.4933,
+    hours: "08:30–19:30（部分區域 17:30 止入）", ticket: "300฿（僅現金，含一瓶水）", address: "2 Sanam Chai Rd, Phra Nakhon, Bangkok",
+    transport: "從大皇宮步行約 10 分；BTS＋船 Tha Tien 碼頭下。",
+    tips: ["46 米大臥佛＋108 缽布施，換零錢投缽求好運", "泰式按摩發源地： foot 280฿/30min、body 260฿/hr 起，建議上午人少", "需遮肩＋過膝，穿好脫的鞋；預留 1.5–2hr"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Wat+Pho+Bangkok" },
+  "wat-arun": { name: "鄭王廟＋泰服體驗", en: "Wat Arun", cat: "寺廟", lat: 13.7437, lng: 100.4889,
+    hours: "08:00–18:00", ticket: "200฿（現金，含一瓶水）", address: "158 Wang Doem Rd, Bangkok Yai",
+    transport: "Tha Tien 碼頭搭渡輪過河約 5฿，3 分鐘即達；回程同。",
+    tips: ["泰服租借 200–400฿/3hr，含妝髮；店家多在對岸 Tha Tien 一帶", "中央佛塔階梯非常陡，穿止滑好走鞋＋小心裙擺", "最佳拍攝 15:30 後斜陽；登塔可俯瞰湄南河", "82 米主塔＋陶瓷馬賽克，不要攀爬禁區"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Wat+Arun+Bangkok" },
+  "iconsiam": { name: "ICONSIAM 暹羅天地", en: "ICONSIAM", cat: "百貨", lat: 13.7268, lng: 100.5105,
+    hours: "10:00–22:00", ticket: "免費", address: "299 Charoen Nakhon Rd, Khlong San, Bangkok",
+    transport: "BTS Krung Thon Buri 轉金線 Charoen Nakhon 站；或 Sathorn 碼頭搭免費接駁船。",
+    tips: ["B1 SookSiam＝冷氣版室內水上市場，街頭小吃一次吃齊", "河畔看水舞＋夜景，晚餐可直接在此解決", "退稅櫃台＋換匯都在館內，伴手禮可先比價再去 Big C"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=ICONSIAM+Bangkok" },
+  "maeklong": { name: "美功鐵道市場", en: "Maeklong Railway Market", cat: "市集", lat: 13.4074, lng: 100.0018,
+    hours: "市場 08:00–19:00；火車進站 08:30 / 11:10 / 14:30 / 17:40，出站 06:20 / 09:00 / 11:30 / 15:30", ticket: "免費參觀", address: "Mae Klong, Samut Songkhram",
+    transport: "距曼谷約 100km、車程 1.5–2hr，Klook 一日團最省心；自由行可 BTS＋小巴轉火車。",
+    tips: ["提前 20–30 分卡位，11:10 場最熱門可一次看進＋出站", "火車來時聽哨音退到紅線外，勿把手／自拍棒伸進軌道", "看完接丹嫩莎朵約 30–40 分車程，行程順路"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Maeklong+Railway+Market" },
+  "damnoen": { name: "丹嫩莎朵水上市場", en: "Damnoen Saduak Floating Market", cat: "市集", lat: 13.5152, lng: 99.9543,
+    hours: "每天 07:00–12:00，最熱鬧 08:00–10:00", ticket: "逛市集免費；手搖船約 150฿/人起，私人長尾船 2000–3000฿/hr（務必先議價）", address: "Damnoen Saduak, Ratchaburi",
+    transport: "Klook 團含美功＋水上市場接送；自由行包車來回最彈性。",
+    tips: ["必吃船麵、椰子冰淇淋、芒果糯米飯，直接跟船家買", "水上拍照注意防水＋防曬，中午人散攤也收", "殺價從 5–6 折開始，買多可談"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Damnoen+Saduak+Floating+Market" },
+  "chatuchak": { name: "洽圖洽週末市集", en: "Chatuchak Weekend Market", cat: "市集", lat: 13.8006, lng: 100.5505,
+    hours: "六日 09:00–18:00 全區；五 18:00–24:00 批發；三四 07:00–18:00 植物區", ticket: "免費", address: "Kamphaeng Phet 2 Rd, Chatuchak, Bangkok",
+    transport: "BTS Mo Chit 1 號出口步行 5 分；或 MRT Chatuchak Park 2 號出口。",
+    tips: ["27 區＋上萬攤，先截圖想買清單，不然一定迷路", "帶現金＋環保袋，議價 8 折起跳", "週六去比週日齊；午後雷陣雨＋悶熱，帶水＋帽子", "夜間加開五六日 19:00–24:00 洽圖洽夜市可接晚餐"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Chatuchak+Weekend+Market" },
+  "thonglo": { name: "通羅夜生活 Thong Lo", en: "Thong Lo Nightlife", cat: "夜生活", lat: 13.7344, lng: 100.5785,
+    hours: "酒吧多 18:00–02:00；按摩多 10:00–24:00", ticket: "依店家", address: "Soi Thong Lo, Sukhumvit 55, Bangkok",
+    transport: "BTS Thong Lo 站；深夜 Grab 會加價，可走出主幹道再叫。",
+    tips: ["Rooftop 建議先訂位＋查 dress code（禁拖鞋背心）", "想放鬆改做精油按摩 300–500฿/hr，比酒吧省腿力", "深夜注意隨身財物＋回飯店交通先查好"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Thong+Lo+Bangkok" },
+  "wat-paknam": { name: "水門寺大佛 Wat Paknam", en: "Wat Paknam Bhasicharoen", cat: "寺廟", lat: 13.7221, lng: 100.4575,
+    hours: "08:00–18:00；玻璃佛塔同；免費入場（登塔設施約 100฿）", ticket: "免費", address: "Pak Khlong Phasi Charoen, Bangkok",
+    transport: "MRT Bang Phai 1 號出口步行約 10–15 分；或 Grab 包來回＋等。",
+    tips: ["69 米金色大佛＋綠色琉璃佛塔，塔頂可拍大佛倒影", "對岸咖啡廳（如 Uruea Cafe 類）是拍大佛＋運河全景機位", "著端裝、輕聲、禁空拍機；中午無遮蔭很曬"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Wat+Paknam+Bhasicharoen+Bangkok" },
+  "centralworld": { name: "Central World", en: "CentralWorld Bangkok", cat: "百貨", lat: 13.7466, lng: 100.5393,
+    hours: "10:00–22:00", ticket: "免費", address: "999/9 Rama I Rd, Pathum Wan, Bangkok",
+    transport: "BTS Chit Lom 或 Siam 步行；D4 從水門寺 Grab 約 30 分。",
+    tips: ["最大購物中心＋冷氣避暑，美食街＋超市可補給", "對面就是 Big C，兩棟一起逛最順"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=CentralWorld+Bangkok" },
+  "bigc": { name: "Big C 伴手禮採購", en: "Big C Supercenter Ratchadamri", cat: "購物", lat: 13.7447, lng: 100.5402,
+    hours: "09:00–24:00（旺季至 02:00，依公告）", ticket: "免費", address: "97/11 Ratchadamri Rd, Pathum Wan, Bangkok",
+    transport: "BTS Chit Lom 步行 5 分，就在 Central World 對面。",
+    tips: ["必買：小老闆海苔、MAMA 麵、手標奶茶包、皇家蜂蜜、青草膏、芒果乾", "滿 2000฿ 可退稅，記得帶護照＋走退稅櫃台", "先在 ICONSIAM 比價再來大採購，行李秤先準備"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Big+C+Supercenter+Ratchadamri" },
+  "rajamangala": { name: "Rajamangala 演唱會", en: "Rajamangala National Stadium", cat: "演唱會", lat: 13.7551, lng: 100.6221,
+    hours: "演唱會多 19:00 開演；務必 16:30 前出發", ticket: "依票券", address: "Ramkhamhaeng Rd, Hua Mak, Bangkok",
+    transport: "MRT 黃線 Hua Mak 或 Ramkhamhaeng 12 站＋轉摩的／Grab 最後 10–15 分；或 ARL Ramkhamhaeng 轉車。散場極塞，往外走一段再叫車。",
+    tips: ["帶雨衣、行動電源、耳塞、小包（大包禁入）", "提早吃飽＋上廁所，場內貴又排隊", "回程 Grab 動態加價＋等 1hr 起跳是常態，預留宵夜＋體力"],
+    gmaps: "https://www.google.com/maps/search/?api=1&query=Rajamangala+National+Stadium" }
+};
+
+/* 每天預設路線（時間序） */
+const DAY_ROUTES = {
+  1: ["bkk", "jodd"],
+  2: ["siam-paragon", "wat-phra-kaew", "wat-pho", "wat-arun", "iconsiam"],
+  3: ["siam-paragon", "maeklong", "damnoen", "chatuchak", "thonglo"],
+  4: ["wat-paknam", "centralworld", "bigc", "rajamangala"],
+  5: ["bkk"]
+};
+const DAY_NAMES = { 1: "Day 1 抵達·夜市", 2: "Day 2 古蹟廟宇", 3: "Day 3 雙市場·洽圖洽", 4: "Day 4 水門寺·演唱會", 5: "Day 5 返程" };
+let currentDay = 1;
+let map, mapLayer, mapLine;
+
+/* ================= 地圖 ================= */
+function initMap() {
+  map = L.map('leafletMap', { scrollWheelZoom: false }).setView([13.75, 100.52], 11);
+  // Esri World Street Map：免 Key、可 file:// 本地開啟。OSM 官方會擋 file://（403），CARTO 現在要 Key，都不當預設。
+  const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics' });
+  const topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, subdomains: 'abc', attribution: 'Map data &copy; OpenStreetMap contributors, SRTM | style &copy; OpenTopoMap (CC-BY-SA)' });
+  esri.addTo(map);
+  // Esri 掛掉時自動切 OpenTopoMap
+  esri.on('tileerror', () => { if (!map.hasLayer(topo)) { map.removeLayer(esri); topo.addTo(map); } });
+  map.on('click', () => map.scrollWheelZoom.enable());
+  renderDayMap(1);
+}
+function numberedIcon(n, isCustom) {
+  return L.divIcon({ className: '', html: `<div class="leaflet-number-icon${isCustom ? ' custom' : ''}">${n}</div>`, iconSize: [28, 28], iconAnchor: [14, 14] });
+}
+function getFullRoute(day) {
+  const base = (DAY_ROUTES[day] || []).map(id => ({ spotId: id, custom: false }));
+  const customs = getCustom(day); // 已按時間排序
+  return base.concat(customs.map(c => ({ spotId: c.spotId, custom: true, time: c.time })));
+}
+function renderDayMap(day) {
+  if (!map) return;
+  if (mapLayer) map.removeLayer(mapLayer);
+  mapLayer = L.layerGroup().addTo(map);
+  if (mapLine) map.removeLayer(mapLine);
+  document.querySelectorAll('.leaflet-decorator-layer').forEach(el => el.remove());
+  const route = getFullRoute(day);
+  const latlngs = [];
+  route.forEach((r, idx) => {
+    const s = SPOTS[r.spotId]; if (!s) return;
+    const ll = [s.lat, s.lng]; latlngs.push(ll);
+    const m = L.marker(ll, { icon: numberedIcon(idx + 1, r.custom) }).addTo(mapLayer);
+    m.bindPopup(`<b>${idx + 1}. ${s.name}</b><br><span style="font-size:11px">${s.en}${r.time ? ' · ' + r.time : ''}</span><br><a href="${s.gmaps}" target="_blank" style="color:#2563eb;font-size:12px">Google Maps 導航 ↗</a>`);
+  });
+  document.getElementById('mapTitle').innerText = DAY_NAMES[day] + ' 今日地圖路線';
+  document.getElementById('mapCount').innerText = `共 ${route.length} 站 · 按時間排序`;
+  const seq = route.map((r, i) => `${i + 1}.${SPOTS[r.spotId] ? SPOTS[r.spotId].name.split(' ')[0] : ''}${r.time ? '(' + r.time + ')' : ''}`).join(' → ');
+  document.getElementById('routeInfo').innerHTML = route.length ? `➡️ <b>順序：</b>${seq}<br>紫色編號＝你自訂加入的行程。點標記可一鍵 Google 導航。` : '今日尚無景點，快去景點庫加入吧！';
+  if (latlngs.length === 1) map.setView(latlngs[0], 14);
+  else if (latlngs.length > 1) {
+    mapLine = L.polyline(latlngs, { color: '#F59E0B', weight: 4, opacity: .85 }).addTo(map);
+    try {
+      if (L.Symbol && L.Symbol.arrowHead) {
+        L.polylineDecorator(mapLine, { patterns: [{ offset: '12%', repeat: 60, symbol: L.Symbol.arrowHead({ pixelSize: 12, polygon: false, pathOptions: { color: '#0F766E', weight: 3 } }) }] }).addTo(map);
+      }
+    } catch (e) {}
+    map.fitBounds(mapLine.getBounds().pad(0.25));
+  }
+  if (window.lucide) lucide.createIcons();
+}
+function openDayInGoogleMaps() {
+  const route = getFullRoute(currentDay);
+  if (!route.length) return alert('今日還沒有景點');
+  const q = route.map(r => `${SPOTS[r.spotId].lat},${SPOTS[r.spotId].lng}`).join('/');
+  window.open(`https://www.google.com/maps/dir/${q}`, '_blank');
+}
+function scrollToMap() { document.getElementById('mapSection').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+function scrollToLibrary() { document.getElementById('librarySection').scrollIntoView({ behavior: 'smooth' }); }
+
+/* ================= 詳情 Modal + 筆記 + 加入行程 ================= */
+let currentSpot = null;
+function openSpot(id, ev) {
+  if (ev) ev.stopPropagation();
+  const s = SPOTS[id]; if (!s) return;
+  currentSpot = id;
+  const note = localStorage.getItem('bkk_note_' + id) || '';
+  document.getElementById('spotModalContent').innerHTML = `
+    <div class="flex items-start justify-between gap-2">
+      <div>
+        <span class="text-[11px] font-bold bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">${s.cat}</span>
+        <h2 class="text-lg font-extrabold text-slate-900 mt-2">${s.name}</h2>
+        <p class="text-xs text-slate-500">${s.en}</p>
+      </div>
+      <button onclick="closeSpot()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 shrink-0"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="grid grid-cols-2 gap-2 mt-4 text-xs">
+      <div class="bg-slate-50 rounded-xl p-2.5"><p class="text-slate-400 text-[10px] font-bold">⏰ 開放時間</p><p class="font-bold text-slate-800 mt-0.5">${s.hours}</p></div>
+      <div class="bg-slate-50 rounded-xl p-2.5"><p class="text-slate-400 text-[10px] font-bold">🎟️ 門票</p><p class="font-bold text-slate-800 mt-0.5">${s.ticket}</p></div>
+    </div>
+    <div class="mt-2 text-xs bg-slate-50 rounded-xl p-2.5"><p class="text-slate-400 text-[10px] font-bold">📍 地址</p><p class="font-semibold text-slate-800 mt-0.5">${s.address}</p></div>
+    <div class="mt-2 text-xs bg-blue-50 border border-blue-100 rounded-xl p-2.5"><p class="font-bold text-blue-900 flex items-center gap-1"><i data-lucide="bus" class="w-3.5 h-3.5"></i> 交通方式</p><p class="text-blue-900 mt-1 leading-relaxed">${s.transport}</p></div>
+    <div class="mt-2 text-xs bg-amber-50 border border-amber-200 rounded-xl p-2.5">
+      <p class="font-bold text-amber-900 flex items-center gap-1"><i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> 須知 / 小撇步</p>
+      <ul class="mt-1 space-y-1 text-amber-900 leading-relaxed">${s.tips.map(t => `<li>• ${t}</li>`).join('')}</ul>
+    </div>
+    <div class="flex gap-2 mt-3">
+      <a href="${s.gmaps}" target="_blank" class="flex-1 text-center text-xs font-bold bg-slate-900 text-white px-3 py-2.5 rounded-xl">Google Maps 導航 ↗</a>
+      <button onclick="focusNote()" class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-2.5 rounded-xl">寫筆記 ✎</button>
+    </div>
+    <div class="mt-4">
+      <div class="flex items-center justify-between">
+        <label class="text-xs font-bold text-slate-800 flex items-center gap-1"><i data-lucide="notebook-pen" class="w-3.5 h-3.5 text-amber-500"></i> 我的筆記（此裝置自動儲存）</label>
+        <span id="noteStatus" class="text-[10px] text-emerald-600 font-bold"></span>
+      </div>
+      <textarea id="noteBox" rows="3" placeholder="例：火山排骨要點小份就好、泰服店約 14:00…" class="note-box w-full mt-1.5 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50">${note.replace(/</g, '&lt;')}</textarea>
+    </div>
+    <div class="mt-4 bg-emerald-50 border border-emerald-200 rounded-2xl p-3">
+      <p class="text-xs font-bold text-emerald-900 flex items-center gap-1"><i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> 加入到我的行程（自動按時間排序＋同步地圖）</p>
+      <div class="flex gap-2 mt-2">
+        <select id="addDay" class="text-xs font-bold border border-emerald-200 rounded-xl px-2 py-2 bg-white flex-1">
+          <option value="1">Day 1 (10/8)</option><option value="2">Day 2 (10/9)</option><option value="3">Day 3 (10/10)</option><option value="4">Day 4 (10/11)</option><option value="5">Day 5 (10/12)</option>
+        </select>
+        <input id="addTime" type="time" value="12:00" class="text-xs font-bold border border-emerald-200 rounded-xl px-2 py-2 bg-white">
+        <button onclick="addSpotToDay('${id}')" class="text-xs font-bold bg-emerald-600 text-white px-3 py-2 rounded-xl hover:bg-emerald-700">加入</button>
+      </div>
+    </div>`;
+  document.getElementById('spotModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  const nb = document.getElementById('noteBox');
+  nb.addEventListener('input', () => {
+    localStorage.setItem('bkk_note_' + id, nb.value);
+    document.getElementById('noteStatus').innerText = '✓ 已自動儲存 ' + new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+    renderLibrary(); // 更新筆記徽章
+  });
+  lucide.createIcons();
+}
+function focusNote() { const n = document.getElementById('noteBox'); if (n) n.focus(); }
+function closeSpot() { document.getElementById('spotModal').classList.add('hidden'); document.body.style.overflow = ''; }
+
+/* ================= 自訂行程（按時間排序） ================= */
+function getCustom(day) {
+  try {
+    const all = JSON.parse(localStorage.getItem('bkk_custom_v1') || '{}');
+    const arr = all[String(day)] || [];
+    return arr.slice().sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+  } catch (e) { return []; }
+}
+function saveCustom(day, arr) {
+  const all = JSON.parse(localStorage.getItem('bkk_custom_v1') || '{}');
+  all[String(day)] = arr;
+  localStorage.setItem('bkk_custom_v1', JSON.stringify(all));
+}
+function addSpotToDay(spotId) {
+  const daySel = document.getElementById('addDay');
+  const timeSel = document.getElementById('addTime');
+  const day = daySel ? daySel.value : String(currentDay);
+  const time = timeSel ? timeSel.value : '12:00';
+  const arr = JSON.parse((localStorage.getItem('bkk_custom_v1') || '{}'))[String(day)] || [];
+  const all = JSON.parse(localStorage.getItem('bkk_custom_v1') || '{}');
+  if (!all[String(day)]) all[String(day)] = [];
+  all[String(day)].push({ spotId, time, addedAt: Date.now() });
+  localStorage.setItem('bkk_custom_v1', JSON.stringify(all));
+  renderCustomLists();
+  if (Number(day) === currentDay) renderDayMap(currentDay);
+  closeSpot();
+  switchDay(Number(day));
+  alert(`已加入 Day ${day} ${time} · ${SPOTS[spotId].name}（已按時間排序）`);
+}
+function deleteCustom(day, indexInSorted) {
+  const sorted = getCustom(day);
+  const target = sorted[indexInSorted];
+  if (!target) return;
+  const all = JSON.parse(localStorage.getItem('bkk_custom_v1') || '{}');
+  const raw = all[String(day)] || [];
+  const idx = raw.findIndex(r => r.spotId === target.spotId && r.time === target.time && r.addedAt === target.addedAt);
+  if (idx >= 0) raw.splice(idx, 1);
+  all[String(day)] = raw;
+  localStorage.setItem('bkk_custom_v1', JSON.stringify(all));
+  renderCustomLists();
+  renderDayMap(currentDay);
+}
+function renderCustomLists() {
+  for (let d = 1; d <= 5; d++) {
+    const box = document.getElementById('custom-list-' + d);
+    if (!box) continue;
+    const arr = getCustom(d);
+    if (!arr.length) { box.innerHTML = ''; continue; }
+    box.innerHTML = `
+      <div class="bg-violet-50 border border-violet-200 rounded-2xl p-3 mt-1">
+        <p class="text-xs font-bold text-violet-900 flex items-center gap-1"><i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> 我自訂加入的行程（已按時間排序）</p>
+        <div class="space-y-2 mt-2">${arr.map((c, i) => {
+          const s = SPOTS[c.spotId]; if (!s) return '';
+          const hasNote = (localStorage.getItem('bkk_note_' + c.spotId) || '').trim();
+          return `<div class="bg-white rounded-xl p-2.5 border border-violet-100 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 cursor-pointer flex-1" onclick="openSpot('${c.spotId}')">
+              <span class="text-[11px] font-black bg-violet-600 text-white px-1.5 py-0.5 rounded-md">${c.time}</span>
+              <div><p class="text-xs font-bold text-slate-900">${s.name}</p>
+              <p class="text-[10px] text-slate-500">${s.hours.split('；')[0]}${hasNote ? ' · ✎有筆記' : ''}</p></div>
+            </div>
+            <button onclick="deleteCustom(${d},${i})" class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded-lg shrink-0">刪除</button>
+          </div>`;
+        }).join('')}</div>
+      </div>`;
+  }
+  lucide.createIcons();
+  updateProgress();
+}
+
+/* ================= 景點庫 ================= */
+function renderLibrary() {
+  const grid = document.getElementById('libraryGrid');
+  grid.innerHTML = Object.entries(SPOTS).map(([id, s]) => {
+    const hasNote = (localStorage.getItem('bkk_note_' + id) || '').trim();
+    return `<div class="spot-card flex items-center gap-2.5 border border-slate-200 rounded-2xl p-2.5 hover:border-amber-300" onclick="openSpot('${id}')">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center font-black text-xs shrink-0">${s.name[0]}</div>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs font-bold text-slate-900 truncate">${s.name} ${hasNote ? '<span class="text-amber-600">✎</span>' : ''}</p>
+        <p class="text-[10px] text-slate-500 truncate">${s.cat} · ${s.hours.split('；')[0]} · ${s.ticket.split('（')[0]}</p>
+      </div>
+      <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 shrink-0">詳情＋加入</span>
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+}
+
+/* ================= 原有：切換 / 進度（＋持久化） ================= */
+function switchDay(dayNum) {
+  currentDay = dayNum;
+  document.querySelectorAll('.day-content').forEach(el => el.classList.add('hidden'));
+  const activeContent = document.getElementById(`day-content-${dayNum}`);
+  if (activeContent) activeContent.classList.remove('hidden');
+  document.querySelectorAll('.day-tab').forEach(btn => {
+    btn.className = "day-tab flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 bg-white text-slate-600 border border-slate-200";
+  });
+  const activeBtn = document.getElementById(`tab-btn-${dayNum}`);
+  if (activeBtn) activeBtn.className = "day-tab flex-shrink-0 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 bg-amber-500 text-white shadow-md shadow-amber-500/25";
+  renderDayMap(dayNum);
+  lucide.createIcons();
+}
+function updateProgress() {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const total = checkboxes.length;
+  let checkedCount = 0;
+  checkboxes.forEach(cb => { if (cb.checked) checkedCount++; });
+  const percentage = total > 0 ? Math.round((checkedCount / total) * 100) : 0;
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  if (progressBar) progressBar.style.width = `${percentage}%`;
+  if (progressText) progressText.innerText = `${percentage}% (${checkedCount}/${total})`;
+}
+function toggleItem(checkbox) { updateProgress(); saveChecks(); }
+function saveChecks() {
+  const boxes = [...document.querySelectorAll('#day-content-1 input[type="checkbox"], #day-content-2 input[type="checkbox"], #day-content-3 input[type="checkbox"], #day-content-4 input[type="checkbox"], #day-content-5 input[type="checkbox"]')];
+  // 只存固定卡片的勾選（自訂行程不計入，避免索引漂移）：用 data 順序
+  const states = [...document.querySelectorAll('.day-content > div input[type="checkbox"], .day-content .spot-card input[type="checkbox"]')].map(cb => cb.checked);
+  try { localStorage.setItem('bkk_checks_v1', JSON.stringify(states)); } catch (e) {}
+}
+function restoreChecks() {
+  try {
+    const states = JSON.parse(localStorage.getItem('bkk_checks_v1') || '[]');
+    const boxes = [...document.querySelectorAll('.day-content .spot-card input[type="checkbox"], .day-content > div input[type="checkbox"]')];
+    // 注意：自訂卡片渲染後順序會變，只還原既有固定卡片數量
+    boxes.forEach((cb, i) => { if (i < states.length) cb.checked = !!states[i]; });
+  } catch (e) {}
+}
+function resetChecklist() {
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  localStorage.removeItem('bkk_checks_v1');
+  updateProgress();
+}
+function exportData() {
+  const notes = {};
+  Object.keys(SPOTS).forEach(id => { const v = localStorage.getItem('bkk_note_' + id); if (v && v.trim()) notes[SPOTS[id].name] = v; });
+  const custom = JSON.parse(localStorage.getItem('bkk_custom_v1') || '{}');
+  const blob = new Blob([JSON.stringify({ notes, customItinerary: custom }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bangkok-trip-notes.json';
+  a.click();
+}
+function clearAllData() {
+  if (!confirm('確定清除所有筆記＋自訂行程＋打卡？')) return;
+  Object.keys(localStorage).filter(k => k.startsWith('bkk_')).forEach(k => localStorage.removeItem(k));
+  renderCustomLists(); renderLibrary(); resetChecklist(); renderDayMap(currentDay);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderLibrary();
+  renderCustomLists();
+  initMap();
+  restoreChecks();
+  updateProgress();
+  lucide.createIcons();
+  setTimeout(() => { if (map) map.invalidateSize(); }, 300);
+});
+</script>
+</body>
+</html>

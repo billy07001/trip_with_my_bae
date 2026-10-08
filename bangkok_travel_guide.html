@@ -471,42 +471,6 @@
       </div>
     </section>
 
-    <!-- ============ EXPENSE 旅費記帳 ============ -->
-    <section id="expenseSection" class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-3">
-      <div class="flex items-center justify-between">
-        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-          <i data-lucide="wallet" class="w-4 h-4 text-emerald-600"></i> 旅費記帳
-        </h3>
-        <span id="expTotal" class="text-[11px] font-black bg-emerald-50 text-emerald-700 px-2 py-1 rounded-lg border border-emerald-200">0 ฿</span>
-      </div>
-      <div class="flex items-center gap-2 text-xs bg-slate-50 rounded-xl p-2.5">
-        <span class="font-bold text-slate-600 shrink-0">匯率 1 ฿ =</span>
-        <input id="expRate" type="number" step="0.01" min="0" oninput="saveRate()" class="w-20 text-xs font-bold border border-slate-200 rounded-lg px-2 py-1.5 bg-white">
-        <span class="font-bold text-slate-600">TWD</span>
-        <span id="expTotalTwd" class="ml-auto font-black text-slate-900"></span>
-      </div>
-      <div id="expCats" class="flex flex-wrap gap-1.5 text-[11px]"></div>
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <input id="expItem" placeholder="品項（例：火山排骨）" class="text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 col-span-2">
-        <input id="expAmt" type="number" min="0" inputmode="decimal" placeholder="金額 ฿" class="text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50">
-        <select id="expCat" class="text-xs font-bold border border-slate-200 rounded-xl p-2.5 bg-slate-50">
-          <option>餐飲</option><option>交通</option><option>購物</option><option>門票</option><option>住宿</option><option>其他</option>
-        </select>
-        <select id="expDay" class="text-xs font-bold border border-slate-200 rounded-xl p-2.5 bg-slate-50">
-          <option value="0">行前</option><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Day 3</option><option value="4">Day 4</option><option value="5">Day 5</option>
-        </select>
-        <button onclick="addExpense()" class="text-xs font-bold bg-emerald-600 text-white px-3 py-2.5 rounded-xl hover:bg-emerald-700">＋ 記一筆</button>
-      </div>
-      <div id="expList" class="space-y-1.5"></div>
-      <div class="bg-slate-50 rounded-2xl p-3 space-y-2">
-        <p class="text-[11px] font-bold text-slate-700 flex items-center gap-1"><i data-lucide="repeat" class="w-3.5 h-3.5 text-slate-500"></i> 匯率快算（用上面設的匯率）</p>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <input id="convTwd" type="number" min="0" oninput="convFromTwd()" placeholder="台幣 TWD" class="text-xs border border-slate-200 rounded-xl p-2.5 bg-white">
-          <input id="convThb" type="number" min="0" oninput="convFromThb()" placeholder="泰銖 THB" class="text-xs border border-slate-200 rounded-xl p-2.5 bg-white">
-        </div>
-      </div>
-    </section>
-
     <!-- ============ FROM GOOGLE MAPS ADD SPOT ============ -->
     <section id="addSpotSection" class="bg-white rounded-3xl p-5 border-2 border-emerald-300 shadow-sm space-y-3">
       <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
@@ -578,7 +542,6 @@
   <!-- Bottom Nav -->
   <nav class="sticky bottom-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-6 py-2.5 flex justify-around text-slate-500 z-30">
     <button onclick="switchDay(1);window.scrollTo({top:0,behavior:'smooth'})" class="flex flex-col items-center gap-1 text-amber-600"><i data-lucide="map-pin" class="w-4 h-4"></i><span class="text-[10px] font-bold">行程</span></button>
-    <button onclick="document.getElementById('expenseSection').scrollIntoView({behavior:'smooth',block:'center'})" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="wallet" class="w-4 h-4"></i><span class="text-[10px] font-medium">記帳</span></button>
     <button onclick="scrollToMap()" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="map" class="w-4 h-4"></i><span class="text-[10px] font-medium">地圖</span></button>
     <button onclick="resetChecklist()" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="rotate-ccw" class="w-4 h-4"></i><span class="text-[10px] font-medium">重置打卡</span></button>
   </nav>
@@ -939,66 +902,6 @@ function renderCustomLists() {
   updateProgress();
 }
 
-/* ================= 旅費記帳 ================= */
-function getExpenses() {
-  try { return JSON.parse(localStorage.getItem('bkk_expense_v1') || '[]'); }
-  catch (e) { return []; }
-}
-function getRate() {
-  const v = parseFloat(localStorage.getItem('bkk_rate_v1'));
-  return (isNaN(v) || v <= 0) ? 0.95 : v;
-}
-function saveRate() {
-  const v = parseFloat(document.getElementById('expRate').value);
-  if (!isNaN(v) && v > 0) localStorage.setItem('bkk_rate_v1', String(v));
-  renderExpenses();
-}
-function addExpense() {
-  const item = document.getElementById('expItem').value.trim();
-  const amt = parseFloat(document.getElementById('expAmt').value);
-  if (!item) return alert('請填品項');
-  if (isNaN(amt) || amt < 0) return alert('金額不正確');
-  const arr = getExpenses();
-  arr.push({ id: Date.now(), item, amt, cat: document.getElementById('expCat').value, day: document.getElementById('expDay').value });
-  localStorage.setItem('bkk_expense_v1', JSON.stringify(arr));
-  document.getElementById('expItem').value = '';
-  document.getElementById('expAmt').value = '';
-  renderExpenses();
-}
-function deleteExpense(id) {
-  localStorage.setItem('bkk_expense_v1', JSON.stringify(getExpenses().filter(e => e.id !== id)));
-  renderExpenses();
-}
-const DAY_SHORT = { 0: '行前', 1: 'D1', 2: 'D2', 3: 'D3', 4: 'D4', 5: 'D5' };
-function renderExpenses() {
-  const arr = getExpenses(), rate = getRate();
-  document.getElementById('expRate').value = rate;
-  const total = arr.reduce((s, e) => s + e.amt, 0);
-  document.getElementById('expTotal').innerText = `${Math.round(total).toLocaleString()} ฿`;
-  document.getElementById('expTotalTwd').innerText = `≈ ${Math.round(total * rate).toLocaleString()} TWD`;
-  const cats = {};
-  arr.forEach(e => { cats[e.cat] = (cats[e.cat] || 0) + e.amt; });
-  document.getElementById('expCats').innerHTML = Object.keys(cats).length
-    ? Object.entries(cats).map(([c, v]) => `<span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-lg font-bold">${c} ${Math.round(v).toLocaleString()}฿</span>`).join('')
-    : '<span class="text-[11px] text-slate-400">還沒有記帳，從第一筆開始吧！</span>';
-  document.getElementById('expList').innerHTML = arr.length ? arr.slice().reverse().map(e => `
-    <div class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 text-xs">
-      <span class="text-[10px] font-black bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-md shrink-0">${DAY_SHORT[e.day] || ''}</span>
-      <div class="flex-1 min-w-0"><p class="font-bold text-slate-800 truncate">${e.item.replace(/</g, '&lt;')}</p>
-      <p class="text-[10px] text-slate-500">${e.cat}</p></div>
-      <span class="font-black text-slate-900 shrink-0">${Number(e.amt).toLocaleString()} ฿</span>
-      <button onclick="deleteExpense(${e.id})" class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded-lg shrink-0">刪除</button>
-    </div>`).join('') : '';
-}
-function convFromTwd() {
-  const v = parseFloat(document.getElementById('convTwd').value);
-  document.getElementById('convThb').value = (isNaN(v) ? '' : Math.round(v / getRate()));
-}
-function convFromThb() {
-  const v = parseFloat(document.getElementById('convThb').value);
-  document.getElementById('convTwd').value = (isNaN(v) ? '' : Math.round(v * getRate()));
-}
-
 /* ================= 複製行程分享 ================= */
 function shareItinerary() {
   const lines = ['🇹🇭 曼谷 5D4N（10/8–10/12）'];
@@ -1070,8 +973,7 @@ function exportData() {
   Object.entries(getMySpots()).forEach(([id, s]) => { const v = localStorage.getItem('bkk_note_' + id); if (v && v.trim()) notes[s.name + '（自訂）'] = v; });
   const custom = JSON.parse(localStorage.getItem('bkk_custom_v1') || '{}');
   const myspots = getMySpots();
-  const expenses = getExpenses();
-  const blob = new Blob([JSON.stringify({ notes, customItinerary: custom, mySpots: myspots, expenses, rate: getRate() }, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ notes, customItinerary: custom, mySpots: myspots }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'bangkok-trip-notes.json';
@@ -1080,12 +982,11 @@ function exportData() {
 function clearAllData() {
   if (!confirm('確定清除所有筆記＋自訂行程＋打卡？')) return;
   Object.keys(localStorage).filter(k => k.startsWith('bkk_')).forEach(k => localStorage.removeItem(k));
-  renderCustomLists(); renderExpenses(); resetChecklist(); renderDayMap(currentDay);
+  renderCustomLists(); resetChecklist(); renderDayMap(currentDay);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   renderCustomLists();
-  renderExpenses();
   initMap();
   restoreChecks();
   updateProgress();

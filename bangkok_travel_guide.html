@@ -119,7 +119,7 @@
         <button onclick="openDayInGoogleMaps()" class="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold bg-slate-900 text-white px-3 py-2.5 rounded-xl hover:bg-slate-700">
           <i data-lucide="navigation" class="w-3.5 h-3.5"></i> Google Maps 開啟今日路線
         </button>
-        <button onclick="scrollToLibrary()" class="flex items-center justify-center gap-1.5 text-xs font-bold bg-amber-500 text-white px-3 py-2.5 rounded-xl hover:bg-amber-600">
+        <button onclick="scrollToAddSpot()" class="flex items-center justify-center gap-1.5 text-xs font-bold bg-amber-500 text-white px-3 py-2.5 rounded-xl hover:bg-amber-600">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i> 加行程
         </button>
       </div>
@@ -173,6 +173,32 @@
           </div>
           <div class="mt-3"><span class="inline-flex items-center gap-1 text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium"><i data-lucide="car" class="w-3 h-3 text-slate-500"></i> 計程車 / Grab</span></div>
         </div>
+      </div>
+      <!-- 行前必帶物品檢查清單 -->
+      <div class="bg-white rounded-2xl p-4 border-2 border-amber-300 shadow-sm">
+        <p class="text-sm font-extrabold text-slate-900 flex items-center gap-1.5"><i data-lucide="backpack" class="w-4 h-4 text-amber-500"></i> 行前必帶物品檢查清單</p>
+        <p class="text-[11px] text-slate-500 mt-0.5">出發前逐項打勾，勾選會自動存檔＋計入頂部進度</p>
+        <div class="grid grid-cols-1 gap-1.5 mt-3 text-xs">
+          <label class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 cursor-pointer"><input type="checkbox" onchange="toggleItem(this)" class="w-4 h-4 rounded accent-amber-500 shrink-0"><span><strong>護照</strong>（效期 6 個月以上）＋機票行程單＋飯店訂房證明</span></label>
+          <label class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 cursor-pointer"><input type="checkbox" onchange="toggleItem(this)" class="w-4 h-4 rounded accent-amber-500 shrink-0"><span><strong>現金＋信用卡</strong>：少量泰銖先換好＋提款卡＋護照影本存手機</span></label>
+          <label class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 cursor-pointer"><input type="checkbox" onchange="toggleItem(this)" class="w-4 h-4 rounded accent-amber-500 shrink-0"><span><strong>網卡 / eSIM</strong>：機場領或先開好漫遊</span></label>
+          <label class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 cursor-pointer"><input type="checkbox" onchange="toggleItem(this)" class="w-4 h-4 rounded accent-amber-500 shrink-0"><span><strong>充電組</strong>：行動電源＋充電線＋萬用轉接頭</span></label>
+          <label class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 cursor-pointer"><input type="checkbox" onchange="toggleItem(this)" class="w-4 h-4 rounded accent-amber-500 shrink-0"><span><strong>過膝長褲 / 長裙</strong>：玉佛寺、臥佛寺服裝檢查用＋薄外套（百貨冷氣強）</span></label>
+          <label class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 cursor-pointer"><input type="checkbox" onchange="toggleItem(this)" class="w-4 h-4 rounded accent-amber-500 shrink-0"><span><strong>好走的鞋</strong>：涼鞋＋布鞋各一（寺廟要頻繁脫穿）</span></label>
+          <label class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 cursor-pointer"><input type="checkbox" onchange="toggleItem(this)" class="w-4 h-4 rounded accent-amber-500 shrink-0"><span><strong>防曬＋雨具</strong>：防曬乳、帽子、折疊傘 / 輕便雨衣（10 月午後雷陣雨）</span></label>
+          <label class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 cursor-pointer"><input type="checkbox" onchange="toggleItem(this)" class="w-4 h-4 rounded accent-amber-500 shrink-0"><span><strong>常備藥</strong>：腸胃藥、感冒藥、蚊蟲藥、酸痛貼布（演唱會＋暴走日用）</span></label>
+          <label class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 cursor-pointer"><input type="checkbox" onchange="toggleItem(this)" class="w-4 h-4 rounded accent-amber-500 shrink-0"><span><strong>演唱會包</strong>：小包、耳塞、雨衣（場館多禁大包＋禁傘）</span></label>
+        </div>
+      </div>
+      <!-- 機場注意事項 -->
+      <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+        <p class="text-sm font-extrabold text-blue-900 flex items-center gap-1.5"><i data-lucide="plane" class="w-4 h-4 text-blue-600"></i> 機場注意事項 ✈️</p>
+        <ul class="mt-2 space-y-1.5 text-xs text-blue-900 leading-relaxed">
+          <li>• 去程提早 <strong>2 小時</strong>到桃機；BKK 入境排隊人多，包車／集合時間要抓鬆一點。</li>
+          <li>• BKK 叫車：官方 Taxi 在 <strong>1F 拿單排隊</strong>；Grab 到指定接送區上車，認車牌後 4 碼，高速公路過路費乘客另付。</li>
+          <li>• 先在機場換少量泰銖＋領網卡就好，市區 SuperRich 匯率更好。</li>
+          <li>• 回程是週一早高峰，<strong>09:30 前務必上車</strong>，BKK 安檢出境至少抓 1.5–2 小時。</li>
+        </ul>
       </div>
       <div id="custom-list-1" class="space-y-3"></div>
     </div>
@@ -395,13 +421,107 @@
       <div id="custom-list-5" class="space-y-3"></div>
     </div>
 
-    <!-- ============ SPOT LIBRARY ============ -->
-    <section id="librarySection" class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+    <!-- ============ TRIP INFO 飯店航班 ============ -->
+    <section id="infoSection" class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-2">
       <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-        <i data-lucide="library" class="w-4 h-4 text-amber-500"></i> 景點庫 · 點擊卡片看詳情 / 加入行程
+        <i data-lucide="bed-double" class="w-4 h-4 text-indigo-500"></i> 飯店＋航班（點一下就能改，自動存檔）
       </h3>
-      <p class="text-[11px] text-slate-500">所有景點的開放時間、門票、須知都整理在詳情頁裡。詳情頁下方可寫筆記（自動存檔）＋選擇天數與時間加入行程，會自動按時間排序並同步到上方地圖。</p>
-      <div id="libraryGrid" class="grid grid-cols-1 gap-2"></div>
+      <div class="grid grid-cols-1 gap-2 text-xs">
+        <div><label class="text-[11px] font-bold text-slate-500">🏨 飯店名稱</label><input id="tiHotel" oninput="saveTripInfo()" placeholder="例：Grande Centre Point…" class="w-full mt-1 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50"></div>
+        <div><label class="text-[11px] font-bold text-slate-500">📍 飯店區域 / 地址</label><input id="tiAddr" oninput="saveTripInfo()" placeholder="例：Terminal 21 旁…" class="w-full mt-1 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="text-[11px] font-bold text-slate-500">✈️ 去程航班</label><input id="tiFlyOut" oninput="saveTripInfo()" placeholder="例：10/8 BR…" class="w-full mt-1 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50"></div>
+          <div><label class="text-[11px] font-bold text-slate-500">✈️ 回程航班</label><input id="tiFlyBack" oninput="saveTripInfo()" placeholder="例：10/12 12:40…" class="w-full mt-1 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50"></div>
+        </div>
+        <div><label class="text-[11px] font-bold text-slate-500">🔑 訂房編號</label><input id="tiBook" oninput="saveTripInfo()" placeholder="例：Agoda / Klook 訂單號…" class="w-full mt-1 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50"></div>
+      </div>
+    </section>
+
+    <!-- ============ EXPENSE 旅費記帳 ============ -->
+    <section id="expenseSection" class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+          <i data-lucide="wallet" class="w-4 h-4 text-emerald-600"></i> 旅費記帳
+        </h3>
+        <span id="expTotal" class="text-[11px] font-black bg-emerald-50 text-emerald-700 px-2 py-1 rounded-lg border border-emerald-200">0 ฿</span>
+      </div>
+      <div class="flex items-center gap-2 text-xs bg-slate-50 rounded-xl p-2.5">
+        <span class="font-bold text-slate-600 shrink-0">匯率 1 ฿ =</span>
+        <input id="expRate" type="number" step="0.01" min="0" oninput="saveRate()" class="w-20 text-xs font-bold border border-slate-200 rounded-lg px-2 py-1.5 bg-white">
+        <span class="font-bold text-slate-600">TWD</span>
+        <span id="expTotalTwd" class="ml-auto font-black text-slate-900"></span>
+      </div>
+      <div id="expCats" class="flex flex-wrap gap-1.5 text-[11px]"></div>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <input id="expItem" placeholder="品項（例：火山排骨）" class="text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 col-span-2">
+        <input id="expAmt" type="number" min="0" inputmode="decimal" placeholder="金額 ฿" class="text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50">
+        <select id="expCat" class="text-xs font-bold border border-slate-200 rounded-xl p-2.5 bg-slate-50">
+          <option>餐飲</option><option>交通</option><option>購物</option><option>門票</option><option>住宿</option><option>其他</option>
+        </select>
+        <select id="expDay" class="text-xs font-bold border border-slate-200 rounded-xl p-2.5 bg-slate-50">
+          <option value="0">行前</option><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Day 3</option><option value="4">Day 4</option><option value="5">Day 5</option>
+        </select>
+        <button onclick="addExpense()" class="text-xs font-bold bg-emerald-600 text-white px-3 py-2.5 rounded-xl hover:bg-emerald-700">＋ 記一筆</button>
+      </div>
+      <div id="expList" class="space-y-1.5"></div>
+      <div class="bg-slate-50 rounded-2xl p-3 space-y-2">
+        <p class="text-[11px] font-bold text-slate-700 flex items-center gap-1"><i data-lucide="repeat" class="w-3.5 h-3.5 text-slate-500"></i> 匯率快算（用上面設的匯率）</p>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <input id="convTwd" type="number" min="0" oninput="convFromTwd()" placeholder="台幣 TWD" class="text-xs border border-slate-200 rounded-xl p-2.5 bg-white">
+          <input id="convThb" type="number" min="0" oninput="convFromThb()" placeholder="泰銖 THB" class="text-xs border border-slate-200 rounded-xl p-2.5 bg-white">
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FROM GOOGLE MAPS ADD SPOT ============ -->
+    <section id="addSpotSection" class="bg-white rounded-3xl p-5 border-2 border-emerald-300 shadow-sm space-y-3">
+      <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+        <i data-lucide="calendar-plus" class="w-4 h-4 text-emerald-600"></i> ＋ 從 Google Maps 加入新景點
+      </h3>
+      <ol class="text-[11px] text-slate-600 bg-emerald-50 border border-emerald-100 rounded-xl p-2.5 space-y-1 leading-relaxed">
+        <li><strong>1.</strong> 去 Google Maps 查到想去的店／景點，按「分享」複製連結，貼到下面（會自動抓出座標）。</li>
+        <li><strong>2.</strong> 或按「在地圖上點選」，再點上方地圖的任意位置，直接用點到的座標。</li>
+        <li><strong>3.</strong> 選天數＋時間按加入，會按時間排序並同步到地圖（紫色編號）。</li>
+      </ol>
+      <div class="space-y-2">
+        <div>
+          <label class="text-[11px] font-bold text-slate-700">景點名稱 *</label>
+          <input id="mySpotName" type="text" placeholder="例：After the Rain Coffee" class="w-full mt-1 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:outline-emerald-500">
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-700">Google Maps 連結（貼上自動抓座標）</label>
+          <input id="mySpotLink" type="text" inputmode="url" placeholder="貼上 maps.google.com 分享連結…" oninput="fillFromGmapsLink()" class="w-full mt-1 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:outline-emerald-500">
+          <p id="mySpotLinkStatus" class="text-[10px] mt-1 text-slate-400">只支援「完整網址」（裡面有 @緯度,經度）。maps.app.goo.gl 短網址請先用瀏覽器打開、等跳轉後再複製網址列貼回來。</p>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[11px] font-bold text-slate-700">緯度 lat *</label>
+            <input id="mySpotLat" type="number" step="any" placeholder="13.7xxx" class="w-full mt-1 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:outline-emerald-500">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-700">經度 lng *</label>
+            <input id="mySpotLng" type="number" step="any" placeholder="100.5xxx" class="w-full mt-1 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50 focus:outline-emerald-500">
+          </div>
+        </div>
+        <button id="pickModeBtn" onclick="togglePickMode()" class="w-full text-xs font-bold bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl hover:bg-slate-200 flex items-center justify-center gap-1.5">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> <span id="pickModeText">在地圖上點選位置</span>
+        </button>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[11px] font-bold text-slate-700">加入哪一天</label>
+            <select id="mySpotDay" class="w-full mt-1 text-xs font-bold border border-slate-200 rounded-xl p-2.5 bg-slate-50">
+              <option value="1">Day 1 (10/8)</option><option value="2">Day 2 (10/9)</option><option value="3">Day 3 (10/10)</option><option value="4">Day 4 (10/11)</option><option value="5">Day 5 (10/12)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-700">時間</label>
+            <input id="mySpotTime" type="time" value="12:00" class="w-full mt-1 text-xs font-bold border border-slate-200 rounded-xl p-2.5 bg-slate-50">
+          </div>
+        </div>
+        <button onclick="addMySpot()" class="w-full text-xs font-bold bg-emerald-600 text-white px-3 py-3 rounded-xl hover:bg-emerald-700 flex items-center justify-center gap-1.5">
+          <i data-lucide="check" class="w-4 h-4"></i> 加入到行程
+        </button>
+      </div>
     </section>
 
     <!-- Helper -->
@@ -413,6 +533,9 @@
       </div>
       <div class="flex gap-2">
         <button onclick="exportData()" class="flex-1 text-xs font-bold bg-slate-100 text-slate-700 px-3 py-2 rounded-xl hover:bg-slate-200 flex items-center justify-center gap-1"><i data-lucide="download" class="w-3.5 h-3.5"></i> 匯出筆記+行程</button>
+        <button onclick="shareItinerary()" class="flex-1 text-xs font-bold bg-emerald-50 text-emerald-700 px-3 py-2 rounded-xl hover:bg-emerald-100 flex items-center justify-center gap-1 border border-emerald-200"><i data-lucide="share-2" class="w-3.5 h-3.5"></i> 複製行程分享</button>
+      </div>
+      <div class="flex gap-2">
         <button onclick="clearAllData()" class="flex-1 text-xs font-bold bg-red-50 text-red-600 px-3 py-2 rounded-xl hover:bg-red-100 flex items-center justify-center gap-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> 清除自訂資料</button>
       </div>
     </section>
@@ -421,7 +544,7 @@
   <!-- Bottom Nav -->
   <nav class="sticky bottom-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-6 py-2.5 flex justify-around text-slate-500 z-30">
     <button onclick="switchDay(1);window.scrollTo({top:0,behavior:'smooth'})" class="flex flex-col items-center gap-1 text-amber-600"><i data-lucide="map-pin" class="w-4 h-4"></i><span class="text-[10px] font-bold">行程</span></button>
-    <button onclick="scrollToLibrary()" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="library" class="w-4 h-4"></i><span class="text-[10px] font-medium">景點庫</span></button>
+    <button onclick="document.getElementById('expenseSection').scrollIntoView({behavior:'smooth',block:'center'})" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="wallet" class="w-4 h-4"></i><span class="text-[10px] font-medium">記帳</span></button>
     <button onclick="scrollToMap()" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="map" class="w-4 h-4"></i><span class="text-[10px] font-medium">地圖</span></button>
     <button onclick="resetChecklist()" class="flex flex-col items-center gap-1 hover:text-slate-800"><i data-lucide="rotate-ccw" class="w-4 h-4"></i><span class="text-[10px] font-medium">重置打卡</span></button>
   </nav>
@@ -538,7 +661,15 @@ function initMap() {
   esri.addTo(map);
   // Esri 掛掉時自動切 OpenTopoMap
   esri.on('tileerror', () => { if (!map.hasLayer(topo)) { map.removeLayer(esri); topo.addTo(map); } });
-  map.on('click', () => map.scrollWheelZoom.enable());
+  map.on('click', (e) => {
+    map.scrollWheelZoom.enable();
+    if (pickMode && e && e.latlng) {
+      document.getElementById('mySpotLat').value = e.latlng.lat.toFixed(6);
+      document.getElementById('mySpotLng').value = e.latlng.lng.toFixed(6);
+      if (pickMarker) map.removeLayer(pickMarker);
+      pickMarker = L.marker(e.latlng).addTo(map).bindPopup('新景點位置預覽').openPopup();
+    }
+  });
   renderDayMap(1);
 }
 function numberedIcon(n, isCustom) {
@@ -558,15 +689,15 @@ function renderDayMap(day) {
   const route = getFullRoute(day);
   const latlngs = [];
   route.forEach((r, idx) => {
-    const s = SPOTS[r.spotId]; if (!s) return;
+    const s = getSpot(r.spotId); if (!s) return;
     const ll = [s.lat, s.lng]; latlngs.push(ll);
     const m = L.marker(ll, { icon: numberedIcon(idx + 1, r.custom) }).addTo(mapLayer);
     m.bindPopup(`<b>${idx + 1}. ${s.name}</b><br><span style="font-size:11px">${s.en}${r.time ? ' · ' + r.time : ''}</span><br><a href="${s.gmaps}" target="_blank" style="color:#2563eb;font-size:12px">Google Maps 導航 ↗</a>`);
   });
   document.getElementById('mapTitle').innerText = DAY_NAMES[day] + ' 今日地圖路線';
   document.getElementById('mapCount').innerText = `共 ${route.length} 站 · 按時間排序`;
-  const seq = route.map((r, i) => `${i + 1}.${SPOTS[r.spotId] ? SPOTS[r.spotId].name.split(' ')[0] : ''}${r.time ? '(' + r.time + ')' : ''}`).join(' → ');
-  document.getElementById('routeInfo').innerHTML = route.length ? `➡️ <b>順序：</b>${seq}<br>紫色編號＝你自訂加入的行程。點標記可一鍵 Google 導航。` : '今日尚無景點，快去景點庫加入吧！';
+  const seq = route.map((r, i) => `${i + 1}.${getSpot(r.spotId) ? getSpot(r.spotId).name.split(' ')[0] : ''}${r.time ? '(' + r.time + ')' : ''}`).join(' → ');
+  document.getElementById('routeInfo').innerHTML = route.length ? `➡️ <b>順序：</b>${seq}<br>紫色編號＝你從 Google Maps 加入的景點。點標記可一鍵 Google 導航。` : '今日尚無景點，快去下方「＋ 從 Google Maps 加入新景點」新增吧！';
   if (latlngs.length === 1) map.setView(latlngs[0], 14);
   else if (latlngs.length > 1) {
     mapLine = L.polyline(latlngs, { color: '#F59E0B', weight: 4, opacity: .85 }).addTo(map);
@@ -582,17 +713,81 @@ function renderDayMap(day) {
 function openDayInGoogleMaps() {
   const route = getFullRoute(currentDay);
   if (!route.length) return alert('今日還沒有景點');
-  const q = route.map(r => `${SPOTS[r.spotId].lat},${SPOTS[r.spotId].lng}`).join('/');
+  const q = route.map(r => { const s = getSpot(r.spotId); return s ? `${s.lat},${s.lng}` : null; }).filter(Boolean).join('/');
   window.open(`https://www.google.com/maps/dir/${q}`, '_blank');
 }
 function scrollToMap() { document.getElementById('mapSection').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-function scrollToLibrary() { document.getElementById('librarySection').scrollIntoView({ behavior: 'smooth' }); }
 
-/* ================= 詳情 Modal + 筆記 + 加入行程 ================= */
+/* ================= 自訂景點（從 Google Maps 加入） ================= */
+function getMySpots() {
+  try { return JSON.parse(localStorage.getItem('bkk_myspots_v1') || '{}'); }
+  catch (e) { return {}; }
+}
+function getSpot(id) { return SPOTS[id] || getMySpots()[id] || null; }
+function parseGmapsUrl(url) {
+  if (!url) return null;
+  let m = url.match(/@(-?\d{1,3}\.\d+),\s*(-?\d{1,3}\.\d+)/);
+  if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+  m = url.match(/!3d(-?\d{1,3}\.\d+)!4d(-?\d{1,3}\.\d+)/);
+  if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+  m = url.match(/[?&](?:q|query|destination)=(-?\d{1,3}\.\d+),\s*(-?\d{1,3}\.\d+)/);
+  if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+  return null;
+}
+function fillFromGmapsLink() {
+  const link = document.getElementById('mySpotLink').value.trim();
+  const st = document.getElementById('mySpotLinkStatus');
+  if (!link) { st.innerText = '只支援「完整網址」（網址裡有 @緯度,經度）。maps.app.goo.gl 短網址裡沒有座標，請先用瀏覽器打開它，等跳轉後複製網址列的完整網址再貼回來。'; st.className = 'text-[10px] mt-1 text-slate-400'; return; }
+  const p = parseGmapsUrl(link);
+  if (p) {
+    document.getElementById('mySpotLat').value = p.lat.toFixed(6);
+    document.getElementById('mySpotLng').value = p.lng.toFixed(6);
+    st.innerText = `✓ 已抓到座標：${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}`;
+    st.className = 'text-[10px] mt-1 text-emerald-600 font-bold';
+  } else {
+    st.innerText = '這是短網址，裡面沒有座標、程式解不開。做法：在瀏覽器打開它 → 等跳轉完成 → 複製網址列的完整網址（有 @數字,數字）→ 貼回來。趕時間的話直接按「在地圖上點選位置」。';
+    st.className = 'text-[10px] mt-1 text-red-500 font-bold';
+  }
+}
+let pickMode = false, pickMarker = null;
+function togglePickMode() {
+  pickMode = !pickMode;
+  document.getElementById('pickModeText').innerText = pickMode ? '點選模式開啟中…去點上方地圖（再按一次取消）' : '在地圖上點選位置';
+  document.getElementById('pickModeBtn').className = pickMode
+    ? 'w-full text-xs font-bold bg-amber-500 text-white px-3 py-2.5 rounded-xl flex items-center justify-center gap-1.5'
+    : 'w-full text-xs font-bold bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl hover:bg-slate-200 flex items-center justify-center gap-1.5';
+  if (pickMode) { scrollToMap(); if (map) map.scrollWheelZoom.enable(); }
+}
+function addMySpot() {
+  const name = document.getElementById('mySpotName').value.trim();
+  const lat = parseFloat(document.getElementById('mySpotLat').value);
+  const lng = parseFloat(document.getElementById('mySpotLng').value);
+  const day = document.getElementById('mySpotDay').value;
+  const time = document.getElementById('mySpotTime').value || '12:00';
+  const link = document.getElementById('mySpotLink').value.trim();
+  if (!name) return alert('請先填景點名稱');
+  if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return alert('座標不正確：請貼 Google Maps 連結自動抓取，或用地圖點選');
+  const id = 'my_' + Date.now();
+  const my = getMySpots();
+  my[id] = { name, en: '自訂景點', cat: '自訂', lat, lng, hours: '自訂景點', ticket: '—', gmaps: link || `https://www.google.com/maps/search/?api=1&query=${lat},${lng}` };
+  localStorage.setItem('bkk_myspots_v1', JSON.stringify(my));
+  const all = JSON.parse(localStorage.getItem('bkk_custom_v1') || '{}');
+  if (!all[String(day)]) all[String(day)] = [];
+  all[String(day)].push({ spotId: id, time, addedAt: Date.now() });
+  localStorage.setItem('bkk_custom_v1', JSON.stringify(all));
+  document.getElementById('mySpotName').value = '';
+  document.getElementById('mySpotLink').value = '';
+  renderCustomLists();
+  switchDay(Number(day));
+  alert(`已加入 Day ${day} ${time} · ${name}（已按時間排序）`);
+}
+function scrollToAddSpot() { document.getElementById('addSpotSection').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+
+/* ================= 詳情 Modal + 筆記 ================= */
 let currentSpot = null;
 function openSpot(id, ev) {
   if (ev) ev.stopPropagation();
-  const s = SPOTS[id]; if (!s) return;
+  const s = getSpot(id); if (!s) return;
   currentSpot = id;
   const note = localStorage.getItem('bkk_note_' + id) || '';
   document.getElementById('spotModalContent').innerHTML = `
@@ -626,14 +821,8 @@ function openSpot(id, ev) {
       <textarea id="noteBox" rows="3" placeholder="例：火山排骨要點小份就好、泰服店約 14:00…" class="note-box w-full mt-1.5 text-xs border border-slate-200 rounded-xl p-2.5 bg-slate-50">${note.replace(/</g, '&lt;')}</textarea>
     </div>
     <div class="mt-4 bg-emerald-50 border border-emerald-200 rounded-2xl p-3">
-      <p class="text-xs font-bold text-emerald-900 flex items-center gap-1"><i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> 加入到我的行程（自動按時間排序＋同步地圖）</p>
-      <div class="flex gap-2 mt-2">
-        <select id="addDay" class="text-xs font-bold border border-emerald-200 rounded-xl px-2 py-2 bg-white flex-1">
-          <option value="1">Day 1 (10/8)</option><option value="2">Day 2 (10/9)</option><option value="3">Day 3 (10/10)</option><option value="4">Day 4 (10/11)</option><option value="5">Day 5 (10/12)</option>
-        </select>
-        <input id="addTime" type="time" value="12:00" class="text-xs font-bold border border-emerald-200 rounded-xl px-2 py-2 bg-white">
-        <button onclick="addSpotToDay('${id}')" class="text-xs font-bold bg-emerald-600 text-white px-3 py-2 rounded-xl hover:bg-emerald-700">加入</button>
-      </div>
+      <p class="text-xs font-bold text-emerald-900 flex items-center gap-1"><i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> 想加新行程？</p>
+      <p class="text-[11px] text-emerald-900 mt-1 leading-relaxed">去 Google Maps 查好景點後，到主畫面「＋ 從 Google Maps 加入新景點」貼連結加入，會自動按時間排序＋同步地圖。</p>
     </div>`;
   document.getElementById('spotModal').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
@@ -641,7 +830,6 @@ function openSpot(id, ev) {
   nb.addEventListener('input', () => {
     localStorage.setItem('bkk_note_' + id, nb.value);
     document.getElementById('noteStatus').innerText = '✓ 已自動儲存 ' + new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
-    renderLibrary(); // 更新筆記徽章
   });
   lucide.createIcons();
 }
@@ -675,7 +863,7 @@ function addSpotToDay(spotId) {
   if (Number(day) === currentDay) renderDayMap(currentDay);
   closeSpot();
   switchDay(Number(day));
-  alert(`已加入 Day ${day} ${time} · ${SPOTS[spotId].name}（已按時間排序）`);
+  alert(`已加入 Day ${day} ${time} · ${getSpot(spotId).name}（已按時間排序）`);
 }
 function deleteCustom(day, indexInSorted) {
   const sorted = getCustom(day);
@@ -698,15 +886,15 @@ function renderCustomLists() {
     if (!arr.length) { box.innerHTML = ''; continue; }
     box.innerHTML = `
       <div class="bg-violet-50 border border-violet-200 rounded-2xl p-3 mt-1">
-        <p class="text-xs font-bold text-violet-900 flex items-center gap-1"><i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> 我自訂加入的行程（已按時間排序）</p>
+        <p class="text-xs font-bold text-violet-900 flex items-center gap-1"><i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> 我從 Google Maps 加入的行程（已按時間排序）</p>
         <div class="space-y-2 mt-2">${arr.map((c, i) => {
-          const s = SPOTS[c.spotId]; if (!s) return '';
+          const s = getSpot(c.spotId); if (!s) return '';
           const hasNote = (localStorage.getItem('bkk_note_' + c.spotId) || '').trim();
           return `<div class="bg-white rounded-xl p-2.5 border border-violet-100 flex items-center justify-between gap-2">
             <div class="flex items-center gap-2 cursor-pointer flex-1" onclick="openSpot('${c.spotId}')">
               <span class="text-[11px] font-black bg-violet-600 text-white px-1.5 py-0.5 rounded-md">${c.time}</span>
               <div><p class="text-xs font-bold text-slate-900">${s.name}</p>
-              <p class="text-[10px] text-slate-500">${s.hours.split('；')[0]}${hasNote ? ' · ✎有筆記' : ''}</p></div>
+              <p class="text-[10px] text-slate-500">${(s.hours || '自訂景點').split('；')[0]}${hasNote ? ' · ✎有筆記' : ''}</p></div>
             </div>
             <button onclick="deleteCustom(${d},${i})" class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded-lg shrink-0">刪除</button>
           </div>`;
@@ -717,21 +905,100 @@ function renderCustomLists() {
   updateProgress();
 }
 
-/* ================= 景點庫 ================= */
-function renderLibrary() {
-  const grid = document.getElementById('libraryGrid');
-  grid.innerHTML = Object.entries(SPOTS).map(([id, s]) => {
-    const hasNote = (localStorage.getItem('bkk_note_' + id) || '').trim();
-    return `<div class="spot-card flex items-center gap-2.5 border border-slate-200 rounded-2xl p-2.5 hover:border-amber-300" onclick="openSpot('${id}')">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white flex items-center justify-center font-black text-xs shrink-0">${s.name[0]}</div>
-      <div class="flex-1 min-w-0">
-        <p class="text-xs font-bold text-slate-900 truncate">${s.name} ${hasNote ? '<span class="text-amber-600">✎</span>' : ''}</p>
-        <p class="text-[10px] text-slate-500 truncate">${s.cat} · ${s.hours.split('；')[0]} · ${s.ticket.split('（')[0]}</p>
-      </div>
-      <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 shrink-0">詳情＋加入</span>
-    </div>`;
-  }).join('');
-  lucide.createIcons();
+/* ================= 飯店＋航班（自動存檔） ================= */
+function saveTripInfo() {
+  const d = { hotel: document.getElementById('tiHotel').value, addr: document.getElementById('tiAddr').value, out: document.getElementById('tiFlyOut').value, back: document.getElementById('tiFlyBack').value, book: document.getElementById('tiBook').value };
+  try { localStorage.setItem('bkk_tripinfo_v1', JSON.stringify(d)); } catch (e) {}
+}
+function loadTripInfo() {
+  try {
+    const d = JSON.parse(localStorage.getItem('bkk_tripinfo_v1') || '{}');
+    if (d.hotel) document.getElementById('tiHotel').value = d.hotel;
+    if (d.addr) document.getElementById('tiAddr').value = d.addr;
+    if (d.out) document.getElementById('tiFlyOut').value = d.out;
+    if (d.back) document.getElementById('tiFlyBack').value = d.back;
+    if (d.book) document.getElementById('tiBook').value = d.book;
+  } catch (e) {}
+}
+
+/* ================= 旅費記帳 ================= */
+function getExpenses() {
+  try { return JSON.parse(localStorage.getItem('bkk_expense_v1') || '[]'); }
+  catch (e) { return []; }
+}
+function getRate() {
+  const v = parseFloat(localStorage.getItem('bkk_rate_v1'));
+  return (isNaN(v) || v <= 0) ? 0.95 : v;
+}
+function saveRate() {
+  const v = parseFloat(document.getElementById('expRate').value);
+  if (!isNaN(v) && v > 0) localStorage.setItem('bkk_rate_v1', String(v));
+  renderExpenses();
+}
+function addExpense() {
+  const item = document.getElementById('expItem').value.trim();
+  const amt = parseFloat(document.getElementById('expAmt').value);
+  if (!item) return alert('請填品項');
+  if (isNaN(amt) || amt < 0) return alert('金額不正確');
+  const arr = getExpenses();
+  arr.push({ id: Date.now(), item, amt, cat: document.getElementById('expCat').value, day: document.getElementById('expDay').value });
+  localStorage.setItem('bkk_expense_v1', JSON.stringify(arr));
+  document.getElementById('expItem').value = '';
+  document.getElementById('expAmt').value = '';
+  renderExpenses();
+}
+function deleteExpense(id) {
+  localStorage.setItem('bkk_expense_v1', JSON.stringify(getExpenses().filter(e => e.id !== id)));
+  renderExpenses();
+}
+const DAY_SHORT = { 0: '行前', 1: 'D1', 2: 'D2', 3: 'D3', 4: 'D4', 5: 'D5' };
+function renderExpenses() {
+  const arr = getExpenses(), rate = getRate();
+  document.getElementById('expRate').value = rate;
+  const total = arr.reduce((s, e) => s + e.amt, 0);
+  document.getElementById('expTotal').innerText = `${Math.round(total).toLocaleString()} ฿`;
+  document.getElementById('expTotalTwd').innerText = `≈ ${Math.round(total * rate).toLocaleString()} TWD`;
+  const cats = {};
+  arr.forEach(e => { cats[e.cat] = (cats[e.cat] || 0) + e.amt; });
+  document.getElementById('expCats').innerHTML = Object.keys(cats).length
+    ? Object.entries(cats).map(([c, v]) => `<span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-lg font-bold">${c} ${Math.round(v).toLocaleString()}฿</span>`).join('')
+    : '<span class="text-[11px] text-slate-400">還沒有記帳，從第一筆開始吧！</span>';
+  document.getElementById('expList').innerHTML = arr.length ? arr.slice().reverse().map(e => `
+    <div class="flex items-center gap-2 bg-slate-50 rounded-xl px-2.5 py-2 text-xs">
+      <span class="text-[10px] font-black bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded-md shrink-0">${DAY_SHORT[e.day] || ''}</span>
+      <div class="flex-1 min-w-0"><p class="font-bold text-slate-800 truncate">${e.item.replace(/</g, '&lt;')}</p>
+      <p class="text-[10px] text-slate-500">${e.cat}</p></div>
+      <span class="font-black text-slate-900 shrink-0">${Number(e.amt).toLocaleString()} ฿</span>
+      <button onclick="deleteExpense(${e.id})" class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded-lg shrink-0">刪除</button>
+    </div>`).join('') : '';
+}
+function convFromTwd() {
+  const v = parseFloat(document.getElementById('convTwd').value);
+  document.getElementById('convThb').value = (isNaN(v) ? '' : Math.round(v / getRate()));
+}
+function convFromThb() {
+  const v = parseFloat(document.getElementById('convThb').value);
+  document.getElementById('convTwd').value = (isNaN(v) ? '' : Math.round(v * getRate()));
+}
+
+/* ================= 複製行程分享 ================= */
+function shareItinerary() {
+  const lines = ['🇹🇭 曼谷 5D4N（10/8–10/12）'];
+  for (let d = 1; d <= 5; d++) {
+    const names = (DAY_ROUTES[d] || []).map(id => { const s = getSpot(id); return s ? s.name : null; }).filter(Boolean);
+    getCustom(d).forEach(c => { const s = getSpot(c.spotId); if (s) names.push(`${c.time} ${s.name}`); });
+    lines.push(`${DAY_NAMES[d]}：${names.join(' → ')}`);
+  }
+  const text = lines.join('\n');
+  const done = () => alert('行程已複製，去 LINE 貼上分享吧！');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); done(); } catch (e) { alert('複製失敗，文字：\n' + text); }
+  document.body.removeChild(ta);
 }
 
 /* ================= 原有：切換 / 進度（＋持久化） ================= */
@@ -782,8 +1049,12 @@ function resetChecklist() {
 function exportData() {
   const notes = {};
   Object.keys(SPOTS).forEach(id => { const v = localStorage.getItem('bkk_note_' + id); if (v && v.trim()) notes[SPOTS[id].name] = v; });
+  Object.entries(getMySpots()).forEach(([id, s]) => { const v = localStorage.getItem('bkk_note_' + id); if (v && v.trim()) notes[s.name + '（自訂）'] = v; });
   const custom = JSON.parse(localStorage.getItem('bkk_custom_v1') || '{}');
-  const blob = new Blob([JSON.stringify({ notes, customItinerary: custom }, null, 2)], { type: 'application/json' });
+  const myspots = getMySpots();
+  const expenses = getExpenses();
+  const tripinfo = JSON.parse(localStorage.getItem('bkk_tripinfo_v1') || '{}');
+  const blob = new Blob([JSON.stringify({ notes, customItinerary: custom, mySpots: myspots, expenses, rate: getRate(), tripinfo }, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'bangkok-trip-notes.json';
@@ -792,12 +1063,13 @@ function exportData() {
 function clearAllData() {
   if (!confirm('確定清除所有筆記＋自訂行程＋打卡？')) return;
   Object.keys(localStorage).filter(k => k.startsWith('bkk_')).forEach(k => localStorage.removeItem(k));
-  renderCustomLists(); renderLibrary(); resetChecklist(); renderDayMap(currentDay);
+  renderCustomLists(); renderExpenses(); loadTripInfo(); resetChecklist(); renderDayMap(currentDay);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderLibrary();
   renderCustomLists();
+  renderExpenses();
+  loadTripInfo();
   initMap();
   restoreChecks();
   updateProgress();
